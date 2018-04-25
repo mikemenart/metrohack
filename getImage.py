@@ -95,6 +95,6 @@ def getImage(upperleft='-29.44,-52.0', lowerright='-29.45,-51.98'):
     # print("size ", final.size)
     # print("tot size", final.height*final.width)
     # print("len ", len(final.getdata()))
-    img = np.asarray(final.getdata())
+    img = np.asarray(final.getdata(), dtype=np.uint8)
     img = np.reshape(img, shape)
     return img
