@@ -3,6 +3,7 @@ library(ggmap)
 
 #load feature functions
 getCHM <- dget("../chm.R")
+loadBirdData <- dget("../loadBirdData")
 
 lat <- c(12.9,13.05)
 long <- c(77.52,77.7)
@@ -21,6 +22,11 @@ getOverlay <- function(feature, file){
   return(overlay)
 }
 
+plotBird <- function(time, file){
+  bird_data = loadBirdData(file)
+  bird_dataadLatitude
+  
+}
 ##########Server Function#########
 function(input, output) {
   lidar_file <- reactive({input$lidar})
@@ -29,7 +35,7 @@ function(input, output) {
   feature <- reactive({input$feature})
   
   output$distPlot <- renderPlot({
-    ggmap(map) + getOverlay(feature, lidar_file)
+    ggmap(map) + getOverlay(feature, lidar_file) + plotsBirds(input$time, input$birds)
     # x    <- faithful$waiting
     # bins <- seq(min(x), max(x), length.out = input$bins + 1)
     # 
