@@ -4,6 +4,21 @@ library(shiny)
 # library(dplyr)
 # library(curl) # make the jsonlite suggested dependency explicit
 
+#load feature functions
+getCHM <- dget("../chm.R")
+#loadBirdData <- dget("../loadBirdData.R")
+source("../loadBirdData.R")
+
+getViewpoints <- function(time, file){
+  if(is.null(file)){
+    return(NULL)
+  }
+  
+  bird_data <- loadBirdData(file$datapath)
+  viewpoints <- getCoords(time, bird_data)
+  
+  return(viewpoints)
+}
 
 function(input, output, session) {
   
@@ -11,20 +26,20 @@ function(input, output, session) {
   lastZoomButtonValue <- NULL
   
   output$bird_map <- renderLeaflet({
-    
+    #browser()
     leaflet() %>%
       addTiles() %>%
-      addMarkers(lng=174.768, lat=-36.852)
+      addMarkers(lat=41.54265387, lng=-81.62946395)
+
+  })
+
+  #bird_data <- reactive({getBirdData(input$bird_csv)})
   
-    # rezoom <- "first"
-    # # If zoom button was clicked this time, and store the value, and rezoom
-    # if (!identical(lastZoomButtonValue, input$zoomButton)) {
-    #   lastZoomButtonValue <<- input$zoomButton
-    #   rezoom <- "always"
-    # }
-    # 
-    # map <- map %>% mapOptions(zoomToLimits = rezoom)
-    # 
-    # map
+  observe({
+    if(!is.null(input$bird_csv)){
+      viewpoints <- getViewpoints(input$time, input$bird_csv)
+      leafletProxy("bird_map", data=viewpoints) %>%
+        addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint)  
+    }
   })
 }
