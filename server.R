@@ -24,7 +24,7 @@ getOverlay <- function(feature, file){
 
 plotBird <- function(time, file){
   bird_data = loadBirdData(file)
-  bird_dataadLatitude
+  bird_data$adLatitude
   
 }
 ##########Server Function#########
