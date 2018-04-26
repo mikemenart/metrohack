@@ -1,11 +1,16 @@
-function(filename){
+###STILL NEED TO REMOVE DUPLICATE LABELS (E.G. MERGE CLNP04 AND CLNP04-2014)
+loadBirdData <- function(filename){
 	bird_data <- read.csv(filename)
 	o_bird <- bird_data[with(bird_data, order(PointID)), ]
-  viewpoint <- levels(o_bird$PointID)
-  latitude <- unique(o_bird$Latitude)
-  longitude <- unique(o_bird$Longitude)
-  coords <- data.frame(viewpoint, latitude, longitude)
-  o_bird <- subset(o_bird, select = -c(Latitude, Longitude)) #removign lat/long might be unnecesary
+  #o_bird <- subset(o_bird, select = -c(Latitude, Longitude)) #removing lat/long might be unnecesary
   
-	return(list(o_bird, coords))
+	return(o_bird)
+}
+
+#bird data ordered by PointID -> PointID/Coordinate pairs
+getCoords <- function(bird_data){
+  viewpoint <- levels(bird_data$PointID)
+  latitude <- unique(bird_data$Latitude)
+  longitude <- unique(bird_data$Longitude)
+  coords <- data.frame(viewpoint, latitude, longitude)
 }

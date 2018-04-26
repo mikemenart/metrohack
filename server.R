@@ -1,12 +1,14 @@
 library(shiny)
 library(ggmap)
+library(ggplot2)
 
 #load feature functions
 getCHM <- dget("../chm.R")
-loadBirdData <- dget("../loadBirdData")
+#loadBirdData <- dget("../loadBirdData.R")
+source("../loadBirdData.R")
 
-lat <- c(12.9,13.05)
-long <- c(77.52,77.7)
+lat <- c(41.54, 41.5495)
+long <- c(-81.645, -81.62)
 region <- make_bbox(long,lat,f=0.05)
 myMapType <- "terrain"
 
@@ -22,11 +24,25 @@ getOverlay <- function(feature, file){
   return(overlay)
 }
 
-plotBird <- function(time, file){
-  bird_data = loadBirdData(file)
-  bird_data$adLatitude
+plotBirds <- function(time, file){
+  if(is.null(file)){
+    return(NULL)
+  }
   
+  bird_data <- loadBirdData(file$datapath)
+  coords <- getCoords(bird_data)
+  #Reformat in some way, this currently does nothing
+  for(vp in coords$viewpoint){ #[v]iew [p]oint
+    vp_data <- bird_data[bird_data$PointID == vp, ]
+    
+  }
+  
+  #browser()
+  #adding color=CommonName pushes map of plot
+  bird_plot <- geom_point(data = bird_data, aes(Longitude, Latitude), size=2, alpha=0.7)  # + labs(color = "Common Name"))
+  return(bird_plot)
 }
+
 ##########Server Function#########
 function(input, output) {
   lidar_file <- reactive({input$lidar})
@@ -35,7 +51,8 @@ function(input, output) {
   feature <- reactive({input$feature})
   
   output$distPlot <- renderPlot({
-    ggmap(map) + getOverlay(feature, lidar_file) + plotsBirds(input$time, input$birds)
+    ggmap(map) + getOverlay(feature, lidar_file) + plotBirds(input$time, input$birds)
+    
     # x    <- faithful$waiting
     # bins <- seq(min(x), max(x), length.out = input$bins + 1)
     # 
