@@ -25,14 +25,14 @@ ui <- fluidPage(
                    choices = list("None" = 1, 
                                  "Leaf Area Density" = 2,
                                  "Canopy Height Model" = 3),
-                   selected = 1)
+                   selected = 1),
       
       
-    ),
+    width=2),
     
     mainPanel(
       
-      plotOutput(outputId = "distPlot")
+      plotOutput(outputId = "map", width="100%", height=900)
       
     )
   )

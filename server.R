@@ -17,7 +17,7 @@ map <- get_map(location=region, source="google", maptype=myMapType)
 getOverlay <- function(feature, file){
   overlay <- NULL
   if(feature() == 2){
-     chm <- getCHM(file)
+     chm <- getCHM(file())
      
   }
   
@@ -50,16 +50,8 @@ function(input, output) {
   
   feature <- reactive({input$feature})
   
-  output$distPlot <- renderPlot({
-    ggmap(map) + getOverlay(feature, lidar_file) + plotBirds(input$time, input$birds)
-    
-    # x    <- faithful$waiting
-    # bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    # 
-    # hist(x, breaks = bins, col = "#75AADB", border = "white",
-    #      xlab = "Waiting time to next eruption (in mins)",
-    #      main = "Histogram of waiting times")
-    
+  output$map <- renderPlot({
+    ggmap(map) + plotBirds(input$time, input$birds) + getOverlay(feature, lidar_file)
   })
   
   
