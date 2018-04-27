@@ -1,6 +1,8 @@
 library(shinydashboard)
 library(leaflet)
 
+SLIDER_RANGE <- 500
+
 header <- dashboardHeader(
   title = "BirdView"
 )
@@ -22,10 +24,12 @@ body <- dashboardBody(
                      multiple = FALSE,
                      accept = ".csv"),
            sliderInput(inputId = "time",
-                       label = "Time:",
+                       label = "Date",
                        min = 1,
-                       max = 100,
+                       max = SLIDER_RANGE,
                        value = 1),
+           textOutput({"date"}),
+           #textInput("set_time", label="Date: (ex 2004-04-05)"),
            
            radioButtons("feature", label = h3("Feature"),
                         choices = list("None" = 1, 
