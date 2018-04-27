@@ -1,5 +1,6 @@
 library(shinydashboard)
 library(leaflet)
+library(shinyFiles)
 
 SLIDER_RANGE <- 500
 
@@ -15,10 +16,13 @@ body <- dashboardBody(
            )
     ),
     column(width = 3,
-           fileInput(inputId = "lidar",
-                     label = "Select LiDAR Point Cloud",
-                     multiple = FALSE,
-                     accept = ".las"),
+           shinyDirButton("lidar_index",
+                            label = "Select LiDAR Shape File (.shp)",
+                            title = "shape file"),
+           # fileInput(inputId = "lidar_index",
+           #           label = "Select LiDAR Shape File (.shp)",
+           #           multiple = TRUE,
+           #           accept=".shp"),
            fileInput(inputId = "bird_csv",
                      label = "Select Bird CSV",
                      multiple = FALSE,

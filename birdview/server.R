@@ -2,6 +2,7 @@ library(shinydashboard)
 library(leaflet)
 library(shiny)
 library(gsubfn)
+library(rgdal)
 # library(dplyr)
 # library(curl) # make the jsonlite suggested dependency explicit
 
@@ -9,6 +10,7 @@ library(gsubfn)
 getCHM <- dget("../chm.R")
 #loadBirdData <- dget("../loadBirdData.R")
 source("../loadBirdData.R")
+source("../ogr.R")
 
 SLIDER_RANGE <- 500
 
@@ -50,21 +52,42 @@ function(input, output, session) {
   lastZoomButtonValue <- NULL
   
   output$bird_map <- renderLeaflet({
+    # index_folder <- "C:/Users/mikej/Documents/metrohack/Index"
+    # ogr <- readOGR(index_folder, GDAL1_integer64_policy = TRUE)
     leaflet() %>%
       addTiles() %>%
+      # addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+      #             opacity = 1.0, fillOpacity = 0.5,
+      #             highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                      # bringToFront = TRUE))
       addMarkers(lat=41.54265387, lng=-81.62946395)
 
   })
-
-  #bird_data <- reactive({getBirdData(input$bird_csv)})
   
-  #observe({
   output$date <- renderText({
     if(!is.null(input$bird_csv)){
       list[viewpoints,date] <- getViewpoints(input$time, input$bird_csv)
       leafletProxy("bird_map", data=viewpoints) %>%
-        addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint)  
+        addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint)
       paste("Selected Date: ", date)
+    }
+  })
+  
+
+  observe({
+    #TODO: change to be more general
+    volumes <- c("Metrohack"="C:/Users/mikej/Documents/metrohack") # getVolumes()
+    shinyDirChoose(input, "lidar_index", roots=volumes, session = session, restrictions=system.file(package='base'))
+    
+    if(!is.null(input$lidar_index)){
+      index_folder <- paste(volumes[1], input$lidar_index$path[2], sep="/")
+      ogr <- readOGR(index_folder, layer = "Cuyahoga_Index", GDAL1_integer64_policy = TRUE)
+      ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+      leaflet(data = ogr) %>%
+        addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+                    opacity = 1.0, fillOpacity = 0.5,
+                    highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                        bringToFront = TRUE))
     }
   })
   
