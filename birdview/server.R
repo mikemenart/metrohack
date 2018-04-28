@@ -1,5 +1,6 @@
 library(shinydashboard)
 library(leaflet)
+library(leaflet.extras)
 library(shiny)
 library(gsubfn)
 library(rgdal)
@@ -50,16 +51,37 @@ function(input, output, session) {
   
   output$bird_map <- renderLeaflet({
     index_folder <- "C:/Users/mikej/Documents/metrohack/Index"
-    ogr <- readOGR(index_folder, GDAL1_integer64_policy = TRUE)
-    ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-    leaflet(ogr_wgs) %>%
+    # ogr <- readOGR(index_folder, GDAL1_integer64_policy = TRUE)
+    # ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+    leaflet() %>% #AD BACK IN wgr_ogs
       addTiles() %>%
-      setView(lat=41.54265387, lng=-81.62946395, zoom=16) %>%
-      addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.2,
-                  highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
-                  popup = ~Name)
+      setView(lat=41.54265387, lng=-81.62946395, zoom=16)
+      # addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+      #             opacity = 1.0, fillOpacity = 0.2,
+      #             highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
+      #             popup = ~Name)
 
+  })
+  
+  # index_folder <- reactive({
+  #TODO: change to be more general
+  volumes <- c("Metrohack"="C:/Users/mikej/Documents/metrohack") # getVolumes()
+  shinyDirChoose(input, "lidar_index", roots=volumes, session = session, restrictions=system.file(package='base'))
+  # })
+  
+  shinyFileChoose(input, "lidar_file", roots=volumes, session=session)
+  
+  output$birdmap <- renderLeaflet({
+    if(!is.null(input$lidar_file)){
+      select_path <- paste(unlist(input$lidar_file$files), collapse="/")
+      # file <- paste(volumes[1], select_path, sep="")
+      # chm <- getCHM(file)
+      # chm <- head(chm)
+      #browser()
+      leafletProxy("bird_map") %>% 
+        addMarkers(lat=41.54265387, lng=-81.62946395)
+        #addHeatmap(lng = ~X, lat = ~Y, intensity = ~Z, radius=25, max=max(chm$Z))
+    }
   })
   
   output$date <- renderText({
@@ -74,11 +96,6 @@ function(input, output, session) {
   
   
   
-  # index_folder <- reactive({
-  #   #TODO: change to be more general
-  volumes <- c("Metrohack"="C:/Users/mikej/Documents/metrohack") # getVolumes()
-  shinyDirChoose(input, "lidar_index", roots=volumes, session = session, restrictions=system.file(package='base'))
-  # })
   
   
   # observeEvent(input$lidar_index, {
@@ -96,15 +113,7 @@ function(input, output, session) {
   #       #                                                 bringToFront = TRUE))
   #   }
   # })
-  
-  observe({
-    if(!is.null(input$lidar_files)){
-      files <- lidar_files$datapath
-      for(file in files){
-        chm <- getCHM(file) 
-      }
-    }
-  })
+ 
   
   
 }
