@@ -24,7 +24,7 @@ function(file){
   las <- lasclipRectangle(las, 0, 0, xmin+100, ymin+100)
   chm <- grid_tincanopy(las, 0.25, c(0,2,5,10,15), c(0,1) , subcircle = 0.2) #this part seems to be working well
   chm <- NAD3toLatLong(chm) 
-  chm_df <- data.frame(X=chm$X,Y=chm$Y, Z=chm$Z)
+  chm_df <- data.frame(lng=chm$X,lat=chm$Y, intensity=chm$Z)
   # plot(chm)
   # chm <- as.raster(chm)
   # kernel <- matrix(1,3,3)

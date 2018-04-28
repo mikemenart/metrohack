@@ -63,56 +63,45 @@ function(input, output, session) {
 
   })
   
-  # index_folder <- reactive({
-  #TODO: change to be more general
-  volumes <- c("Metrohack"="C:/Users/mikej/Documents/metrohack") # getVolumes()
-  shinyDirChoose(input, "lidar_index", roots=volumes, session = session, restrictions=system.file(package='base'))
-  # })
-  
-  shinyFileChoose(input, "lidar_file", roots=volumes, session=session)
-  
-  output$birdmap <- renderLeaflet({
-    if(!is.null(input$lidar_file)){
-      select_path <- paste(unlist(input$lidar_file$files), collapse="/")
-      # file <- paste(volumes[1], select_path, sep="")
-      # chm <- getCHM(file)
-      # chm <- head(chm)
-      #browser()
-      leafletProxy("bird_map") %>% 
-        addMarkers(lat=41.54265387, lng=-81.62946395)
-        #addHeatmap(lng = ~X, lat = ~Y, intensity = ~Z, radius=25, max=max(chm$Z))
-    }
-  })
   
   output$date <- renderText({
     date <- NULL
     if(!is.null(input$bird_csv)){
       list[viewpoints,date] <- getViewpoints(input$time, input$bird_csv)
+      #browser()
       leafletProxy("bird_map", data=viewpoints) %>%
         addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint)
     }
     paste("Selected Date: ", date)
   })
   
+   
+  observeEvent(input$lidar_button, {
+    if(!is.null(input$lidar_file)){
+      file <- input$lidar_file
+      chm <- getCHM(file)
+      # browser()
+      leafletProxy("bird_map", data=chm) %>% 
+        addHeatmap(lng = chm$lng, lat = chm$lat, intensity = chm$intensity, blur=20, radius=25, max=200)#max=max(chm$Z))
+    }
+  })
   
   
   
-  
-  # observeEvent(input$lidar_index, {
-  #   # if(!is.null(input$lidar_index)){
-  #   if(!is.null(input$lidar_index)){
-  #     index_folder <- paste(volumes[1], input$lidar_index$path[2], sep="/")
-  #     # browser()
-  #     ogr <- readOGR(index_folder, layer = "Cuyahoga_Index", GDAL1_integer64_policy = TRUE)
-  #     ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-  #     proxy <- leafletProxy("bird_map") %>%
-  #       addMarkers(lat=41.54265387, lng=-81.62946395)
-  #       # addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
-  #       #             opacity = 1.0, fillOpacity = 0.5,
-  #       #             highlightOptions = highlightOptions(color = "white", weight = 2,
-  #       #                                                 bringToFront = TRUE))
-  #   }
-  # })
+  observeEvent(input$index_button, {
+    # if(!is.null(input$lidar_index)){
+    if(!is.null(input$lidar_index)){
+      index_folder <- input$lidar_index
+      # browser()
+      ogr <- readOGR(index_folder, layer = "Cuyahoga_Index", GDAL1_integer64_policy = TRUE)
+      ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
+      leafletProxy("bird_map", data=ogr_wgs) %>%
+        addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+                    opacity = 1.0, fillOpacity = 0.01,
+                    highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
+                    popup = ~Name)
+    }
+  })
  
   
   
