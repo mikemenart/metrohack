@@ -82,7 +82,8 @@ function(input, output, session) {
       chm <- getCHM(file)
       # browser()
       leafletProxy("bird_map", data=chm) %>% 
-        addHeatmap(lng = chm$lng, lat = chm$lat, intensity = chm$intensity, blur=20, radius=25, max=200)#max=max(chm$Z))
+        addRasterImage(chm, colors = spectral)
+        # addHeatmap(lng = chm$lng, lat = chm$lat, intensity = chm$intensity, blur=20, radius=25, max=200)#max=max(chm$Z))
     }
   })
   
