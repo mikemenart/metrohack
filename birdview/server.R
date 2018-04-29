@@ -37,21 +37,24 @@ function(input, output, session) {
   output$date <- renderText({
     date <- NULL
     if(!is.null(bird_data())){
-      # browser()
       date <- getDate(input$time, bird_data())
-      filtered_birds <- dateFilter(date, bird_data())
+      filtered_birds <- birdFilter(date, input$include, bird_data())
       viewpoints <- getViewpoints(filtered_birds)
-      # browser()
       vp_birds <- birdsByVP(filtered_birds) 
       bird_freq <- getBirdFreqs(vp_birds)
       circles <- getVPCircles(viewpoints, bird_freq)
-      lab_opt <- labelOptions(noHide = TRUE)
-      # browser()
+      
+      #Marker Customization
+      lab_opt <- labelOptions(noHide = FALSE)
+      pal <- colorFactor(COLORS, domain = SPECIES)
       leafletProxy("bird_map", data=viewpoints) %>%
         clearMarkers() %>%
         addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint) %>%
         addCircleMarkers(data=circles, lng = ~long, lat = ~lat, radius = ~size, 
-                         label = ~paste(as.character(species), " ", freq), labelOptions = lab_opt)
+                         label = ~paste(as.character(species), " ", freq), labelOptions = lab_opt,
+                         color = ~pal(as.character(species)), fillOpacity = 1) %>%
+        addLegend("bottomright", pal=pal, values = ~as.character(circles$species),
+                  title = "Bird Species", opacity=1)
     }
     paste("Selected Date: ", date)
   })
@@ -60,13 +63,22 @@ function(input, output, session) {
   #######Feature Rasters######### 
   observeEvent(input$lidar_button, {
     if(!is.null(input$lidar_file)){
+      if(input$feature == 3){
       file <- input$lidar_file
       chm <- getCHM(file)
-      # browser()
       pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(chm), na.color = "transparent")
       leafletProxy("bird_map", data=chm) %>% 
-        addRasterImage(x = chm, colors=pal)
+        addRasterImage(x = chm, colors=pal, opacity=1)
         # addHeatmap(lng = chm$lng, lat = chm$lat, intensity = chm$intensity, blur=20, radius=25, max=200)#max=max(chm$Z))
+      }
+      else if(input$feature == 2){
+        showModal(modalDialog(
+          title = "Feature in development",
+          "Leaf area density not yet supported. See LAD.R",
+          easyClose = TRUE,
+          footer = NULL
+        ))
+      }
     }
   })
   

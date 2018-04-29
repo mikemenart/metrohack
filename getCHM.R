@@ -26,7 +26,7 @@ function(file){
   ymin <- min(las@data$Y)
 
   #TODO: allow user to clip las segment  
-  las <- lasclipRectangle(las, 0, 0, xmin+100, ymin+100)
+  las <- lasclipRectangle(las, 0, 0, xmin+500, ymin+500)
   chm <- grid_tincanopy(las, 0.25, c(0,2,5,10,15), c(0,1) , subcircle = 0.2) #this part seems to be working well
   latlong <- NAD3toLatLong(chm)
   mat<-latlong@coords

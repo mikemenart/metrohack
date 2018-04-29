@@ -45,7 +45,13 @@ getViewpoints <- function(bird_data){
   return(viewpoints)
 }
 
-dateFilter <- function(filter_date, bird_data){
+birdFilter <- function(filter_date, include, bird_data){
       filtered_birds <- (bird_data[as.POSIXct(bird_data$SurveyDate) == filter_date, ])
+      if(!("flyby" %in% include)){
+        filtered_birds <- filtered_birds[(as.character(filtered_birds$FlyBy)  == ""), ] 
+      }
+      if(!("onlake" %in% include)){
+        filtered_birds <- filtered_birds[(as.character(filtered_birds$OnLake) == ""), ]
+      }
       return(filtered_birds)
 }

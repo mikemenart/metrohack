@@ -1,1 +1,3 @@
 SLIDER_RANGE <- 500
+SPECIES <- c("Accipitriformes", "Anseriformes", "Apodiformes", "Charadriiformes", "Columbiformes", "Coraciiformes", "Cuculiformes", "Falconiformes", "Gaviiformes", "Gruiformes", "N/A", "Passeriformes", "Pelecaniformes", "Phasianidae", "Piciformes", "Podicipediformes", "Strigiformes", "Suliformes")
+COLORS <- c("#f44242", "#f4bb41", "#f4c741", "#f1f441", "#acf441", "#70f441", "#41f473", "#41f4c1", "#41c7f4", "#4185f4", "#419df4", "#4179f4", "#4167f4", "#4152f4", "#4941f4", "#7641f4", "#af41f4", "#f44141")
