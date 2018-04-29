@@ -2,12 +2,13 @@ library(shinydashboard)
 library(leaflet)
 library(shinyFiles)
 
-SLIDER_RANGE <- 500
+source("../slider_range.R")
 
 header <- dashboardHeader(
   title = "BirdView"
 )
 
+###########UI#################
 body <- dashboardBody(
   fluidRow(
     column(width = 9,

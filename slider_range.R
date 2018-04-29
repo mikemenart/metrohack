@@ -1,0 +1,1 @@
+SLIDER_RANGE <- 500

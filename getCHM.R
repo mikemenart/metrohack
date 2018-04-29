@@ -31,25 +31,10 @@ function(file){
   latlong <- NAD3toLatLong(chm)
   mat<-latlong@coords
   latlong@coords <- latlong@coords[, 1:2]
-  # xyz <- gridify(xyz)
   e <- extent(mat[,1:2])
-  # xmin <- min(mat[,1])
-  # xmax <- max(mat[,1])
-  # ymin <- min(mat[,2])
-  # ymax <- max(mat[,2])
-  # diff <- (xmax-xmin)-(ymax-ymin)
-  # ymax <- ymax + diff
-  # r <- raster(xmn=xmin, xmx=xmax, ymn=ymin, ymx=ymax)
   r <- raster(e, nrows=1000, ncols=1000, crs=WGS84_proj)
   rast <- rasterize(latlong, r, mat[,3], fun=mean)
   rast <- setMinMax(rast)
-  # rast <- rasterFromXYZ(grid)
-  # rast <- projectRaster(poin, crs=WGS84_proj)
-  # chm_df <- data.frame(lng=chm$X,lat=chm$Y, intensity=chm$Z)
-  # plot(chm)
-  # kernel <- matrix(1,3,3)
-  # chm <- raster::focal(chm, w = kernel, fun = median, na.rm = TRUE)
-  # plot(rast)
   return(rast)
   
   ##Add for treetops segmentation##

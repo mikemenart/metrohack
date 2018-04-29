@@ -17,6 +17,7 @@ gridLAS <- function(las, grid_size){
   return(unlist(grid))
 }
 
+#TODO: Test and finish
 getLAD <- function(file, grid_size, height){
   las <- readLAS(file)
   #z above 100 is outliers
@@ -32,7 +33,5 @@ getLAD <- function(file, grid_size, height){
       X[i] <- (min(seg@data$X)+max(seg@data$X))/2
       Y[i] <- (min(seg@data$Y)+max(seg@data$Y))/2
   }
- 
-   
    
 }

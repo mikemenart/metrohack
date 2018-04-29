@@ -27,6 +27,6 @@ getCircleCords <- function(viewLat,viewLon,bird){
     i=i+1
   }
   
-  circles <- data.frame(lat, long, size)
+  circles <- data.frame(species, lat, long, size)
   return(circles)
 }
