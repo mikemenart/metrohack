@@ -11,6 +11,7 @@ library(rgdal)
 getCHM <- dget("../getCHM.R")
 #loadBirdData <- dget("../loadBirdData.R")
 source("../birdData.R")
+source("../birdCircles.R")
 source("../ogr.R")
 source("../slider_range.R")
 
@@ -39,8 +40,13 @@ function(input, output, session) {
       # browser()
       date <- getDate(input$time, bird_data())
       viewpoints <- getViewpoints(date, bird_data())
+      vp_birds <- birdsByVP(bird_data()) 
+      bird_freq <- getBirdFreqs(vp_birds)
+      circles <- getVPCircles(viewpoints, bird_freq)
+      browser()
       leafletProxy("bird_map", data=viewpoints) %>%
-        addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint)
+        addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint) %>%
+        addCircleMarkers(data=circles, lng = ~long, lat = ~lat, radius = ~size, popup = ~species)
     }
     paste("Selected Date: ", date)
   })
