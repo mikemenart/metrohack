@@ -21,15 +21,18 @@ getBirdFreqs <- function(vp_birds){
   for(vp in viewpoints){
     #data frame for this viewpoint
     bird_data <- vp_birds[[vp]]
+      
     #data frame of species and freq
     vp_bf <- data.frame(species, freq=integer(length(species)))
    
-    #parse of bird data to fill bird_freq 
-    for(i in 1:nrow(bird_data)){
-      bird <- bird_data[i,]
-      c_name <- as.character(bird$CommonName)
-      s_name <- as.character(order_map[as.character(order_map$CommonName) == c_name, ]$BirdSpeciesOrder)
-      vp_bf[as.character(vp_bf$species) == s_name, ]$freq %+=% 1
+    if(nrow(bird_data) != 0){
+      #parse of bird data to fill bird_freq 
+      for(i in 1:nrow(bird_data)){
+        bird <- bird_data[i,]
+        c_name <- as.character(bird$CommonName)
+        s_name <- as.character(order_map[as.character(order_map$CommonName) == c_name, ]$BirdSpeciesOrder)
+        vp_bf[as.character(vp_bf$species) == s_name, ]$freq %+=% bird_data$BirdCount[i]
+      }
     }
     bird_freq[vp] <- list(vp_bf)
   }
@@ -47,9 +50,15 @@ getVPCircles <- function(viewpoints, bird_freq){
   return(circles)
 }
 
+deg2rad <- function(rad) {(rad * pi) / (180)}
+
 getCircleCoords <- function(viewLat,viewLon,bird){
+  
+  #remove birds species with zero frequency
+  bird <- bird[bird$freq != 0, ]
+  
   #distance between speciesMarkers and viewingSpot
-  radiusToMarker<-0.001
+  radiusToMarker<-0.0004
   len <- length(bird$species)
   degreesOfSeperation<-360/len
   
@@ -58,14 +67,17 @@ getCircleCoords <- function(viewLat,viewLon,bird){
   lat <- vector(length = len)
   long <- vector(length = len) 
   size <- vector(length = len)
+  freq <- vector(length = len)
  
   #find lat and lon position of each species
   for (i in 1:len){
     species[i] <- as.character(bird$species[i]) ##SOS IS THIS RIGHT??
-    originLat<-radiusToMarker*(sin(i*degreesOfSeperation))
-    originLon<-radiusToMarker*(cos(i*degreesOfSeperation))
+    angle <- deg2rad(i*degreesOfSeperation)
+    originLat<-radiusToMarker*(sin(angle))
+    originLon<-radiusToMarker*(cos(angle))
     lat[i]<-originLat+viewLat
     long[i]<-originLon+viewLon
+    freq[i] <- bird$freq[i]
     
     #scale the freq into a span
     radSpanMax<-15
@@ -76,6 +88,6 @@ getCircleCoords <- function(viewLat,viewLon,bird){
     i = i+1
   }
   
-  circles <- data.frame(species, lat, long, size)
+  circles <- data.frame(species, lat, long, size, freq)
   return(circles)
 }

@@ -39,9 +39,13 @@ getDate <- function(time, bird_data){
   return(filter_date)
 }
 
-getViewpoints <- function(filter_date, bird_data){
-  filtered_birds <- (bird_data[as.POSIXct(bird_data$SurveyDate) == filter_date, ])
-  viewpoints <- getViewCoords(time, filtered_birds)
+getViewpoints <- function(bird_data){
+  viewpoints <- getViewCoords(time, bird_data)
   
   return(viewpoints)
+}
+
+dateFilter <- function(filter_date, bird_data){
+      filtered_birds <- (bird_data[as.POSIXct(bird_data$SurveyDate) == filter_date, ])
+      return(filtered_birds)
 }

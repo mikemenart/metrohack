@@ -39,14 +39,19 @@ function(input, output, session) {
     if(!is.null(bird_data())){
       # browser()
       date <- getDate(input$time, bird_data())
-      viewpoints <- getViewpoints(date, bird_data())
-      vp_birds <- birdsByVP(bird_data()) 
+      filtered_birds <- dateFilter(date, bird_data())
+      viewpoints <- getViewpoints(filtered_birds)
+      # browser()
+      vp_birds <- birdsByVP(filtered_birds) 
       bird_freq <- getBirdFreqs(vp_birds)
       circles <- getVPCircles(viewpoints, bird_freq)
-      browser()
+      lab_opt <- labelOptions(noHide = TRUE)
+      # browser()
       leafletProxy("bird_map", data=viewpoints) %>%
+        clearMarkers() %>%
         addMarkers(lng = ~Longitude, lat = ~Latitude, label = ~Viewpoint) %>%
-        addCircleMarkers(data=circles, lng = ~long, lat = ~lat, radius = ~size, popup = ~species)
+        addCircleMarkers(data=circles, lng = ~long, lat = ~lat, radius = ~size, 
+                         label = ~paste(as.character(species), " ", freq), labelOptions = lab_opt)
     }
     paste("Selected Date: ", date)
   })
