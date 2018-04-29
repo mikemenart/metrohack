@@ -51,15 +51,12 @@ function(input, output, session) {
   
   output$bird_map <- renderLeaflet({
     index_folder <- "C:/Users/mikej/Documents/metrohack/Index"
-    # ogr <- readOGR(index_folder, GDAL1_integer64_policy = TRUE)
-    # ogr_wgs <- spTransform(ogr, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-    leaflet() %>% #AD BACK IN wgr_ogs
+    # file <- "C:/Users/mikej/Documents/metrohack/metrohack/data/Cuya_0044_1.3.las"
+    # chm <- getCHM(file)
+    leaflet() %>% 
       addTiles() %>%
       setView(lat=41.54265387, lng=-81.62946395, zoom=16)
-      # addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
-      #             opacity = 1.0, fillOpacity = 0.2,
-      #             highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE),
-      #             popup = ~Name)
+      # addRasterImage(chm)
 
   })
   
@@ -81,8 +78,9 @@ function(input, output, session) {
       file <- input$lidar_file
       chm <- getCHM(file)
       # browser()
+      pal <- colorNumeric(c("#0C2C84", "#41B6C4", "#FFFFCC"), values(chm), na.color = "transparent")
       leafletProxy("bird_map", data=chm) %>% 
-        addRasterImage(chm, colors = spectral)
+        addRasterImage(x = chm, colors=pal)
         # addHeatmap(lng = chm$lng, lat = chm$lat, intensity = chm$intensity, blur=20, radius=25, max=200)#max=max(chm$Z))
     }
   })

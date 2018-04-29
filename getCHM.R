@@ -19,14 +19,6 @@ NAD3toLatLong <- function(chm){
   return(latlong)
 }
 
-gridify <- function(df){
-  steps <- 100
-  isu <- with(df, interp(X,Y,Z,
-                                  xo=seq(min(X), max(X), length = steps),
-                                  yo=seq(min(Y), max(Y), length = steps)
-  ))
- return(isu) 
-}
 function(file){
   las <- readLAS(file)
  
@@ -50,6 +42,7 @@ function(file){
   # r <- raster(xmn=xmin, xmx=xmax, ymn=ymin, ymx=ymax)
   r <- raster(e, nrows=1000, ncols=1000, crs=WGS84_proj)
   rast <- rasterize(latlong, r, mat[,3], fun=mean)
+  rast <- setMinMax(rast)
   # rast <- rasterFromXYZ(grid)
   # rast <- projectRaster(poin, crs=WGS84_proj)
   # chm_df <- data.frame(lng=chm$X,lat=chm$Y, intensity=chm$Z)
